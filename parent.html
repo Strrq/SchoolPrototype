@@ -1,0 +1,30 @@
+<h1>Welcome, Parent!</h1>
+<h3>📤 Upload Document</h3>
+<input type="file" id="docUpload">
+<button onclick="uploadDoc()">Upload</button>
+<h3>💬 Message</h3>
+<textarea id="messageText"></textarea>
+<button onclick="sendMessage()">Send to Teacher/Admin</button>
+<link rel="stylesheet" href="style.css">
+<script src="firebase.js"></script>
+<script>
+function uploadDoc() {
+  const file = document.getElementById("docUpload").files[0];
+  if (!file) return alert("No file selected");
+  firebase.database().ref("documents").push({
+    name: file.name,
+    uploadedBy: "parent",
+    status: "pending"
+  });
+  alert("Document submitted!");
+}
+function sendMessage() {
+  const msg = document.getElementById("messageText").value;
+  firebase.database().ref("messages").push({
+    from: "parent",
+    to: "teacher_admin",
+    content: msg
+  });
+  alert("Message sent!");
+}
+</script>

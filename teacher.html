@@ -1,0 +1,24 @@
+<h1>Welcome, Teacher!</h1>
+<h3>📝 Set Homework</h3>
+<input type="text" id="homeworkInput">
+<button onclick="setHomework()">Post Homework</button>
+<h3>💬 Messages from Parents</h3>
+<ul id="msgList"></ul>
+<link rel="stylesheet" href="style.css">
+<script src="firebase.js"></script>
+<script>
+function setHomework() {
+  const hw = document.getElementById("homeworkInput").value;
+  firebase.database().ref("homework").push(hw);
+}
+firebase.database().ref("messages").on("value", snapshot => {
+  document.getElementById("msgList").innerHTML = "";
+  snapshot.forEach(child => {
+    if (child.val().from === "parent") {
+      const li = document.createElement("li");
+      li.textContent = child.val().content;
+      document.getElementById("msgList").appendChild(li);
+    }
+  });
+});
+</script>

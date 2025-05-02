@@ -1,0 +1,39 @@
+<h1>Welcome, Admin!</h1>
+<h3>🗓️ Set Schedule</h3>
+<input type="text" id="scheduleInput">
+<button onclick="setSchedule()">Post Schedule</button>
+<h3>📂 Approve Documents</h3>
+<ul id="docList"></ul>
+<h3>💬 Message Parents</h3>
+<textarea id="adminMsg"></textarea>
+<button onclick="sendAdminMsg()">Send</button>
+<link rel="stylesheet" href="style.css">
+<script src="firebase.js"></script>
+<script>
+function setSchedule() {
+  const sched = document.getElementById("scheduleInput").value;
+  firebase.database().ref("schedule").push(sched);
+}
+function sendAdminMsg() {
+  const msg = document.getElementById("adminMsg").value;
+  firebase.database().ref("messages").push({ from: "admin", to: "parents", content: msg });
+  alert("Message sent!");
+}
+firebase.database().ref("documents").on("value", snapshot => {
+  const list = document.getElementById("docList");
+  list.innerHTML = "";
+  snapshot.forEach(doc => {
+    const data = doc.val();
+    const li = document.createElement("li");
+    li.innerHTML = `
+      ${data.name} — <strong>${data.status}</strong>
+      ${data.status === "pending" ? `<button onclick="approveDoc('${doc.key}')">Approve</button>` : ""}
+    `;
+    list.appendChild(li);
+  });
+});
+function approveDoc(docId) {
+  firebase.database().ref("documents/" + docId).update({ status: "approved" });
+  alert("Approved!");
+}
+</script>
